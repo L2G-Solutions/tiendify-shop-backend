@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import db
+from app.routes.categories import router as category_router
+from app.routes.products import router as product_router
 
 
 @asynccontextmanager
@@ -34,3 +36,7 @@ app.add_middleware(
 @app.get("/health")
 def handle_get_health():
     return {"status": "ok"}
+
+
+app.include_router(category_router, prefix="/categories")
+app.include_router(product_router, prefix="/products")
