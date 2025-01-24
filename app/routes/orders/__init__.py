@@ -1,7 +1,7 @@
-from app.constants import PaymentStatus, ShippingStatus
 from fastapi import APIRouter, Depends, Response
 
-from app.database import get_shops_db
+from app.constants import PaymentStatus, ShippingStatus
+from app.database import get_db as get_shops_db
 from prisma import Prisma as ShopsClient
 
 router = APIRouter(tags=["orders"])

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from app.database import get_shops_db
+from app.database import get_db as get_shops_db
 from prisma import Prisma as ShopsClient
 
 router = APIRouter(tags=["customers"])
