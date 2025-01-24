@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import db
 from app.routes.categories import router as category_router
+from app.routes.customers import router as customer_router
 from app.routes.orders import router as order_router
 from app.routes.products import router as product_router
 
@@ -42,3 +43,4 @@ def handle_get_health():
 app.include_router(category_router, prefix="/categories")
 app.include_router(product_router, prefix="/products")
 app.include_router(order_router, prefix="/orders")
+app.include_router(customer_router, prefix="/customers")
