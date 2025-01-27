@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 
 from prisma.bases import Basesecret_keys as BaseSecretKey
 from pydantic import BaseModel
@@ -10,8 +10,9 @@ class SecretKeyCreate(BaseModel):
 
 
 class SecretKeyInfo(BaseSecretKey):
+    id: str
     name: str
-    scopes: List[str]
+    scopes: str
     prefix: str
     enabled: bool
     created_at: str
