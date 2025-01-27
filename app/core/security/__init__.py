@@ -1,13 +1,15 @@
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Union
 from urllib.parse import quote
 
 from fastapi import Depends, HTTPException
-from fastapi.security import APIKeyCookie
+from fastapi.security import APIKeyCookie, OAuth2PasswordBearer
 from jwt import PyJWKClient, decode
 from jwt.exceptions import ExpiredSignatureError, InvalidTokenError
 from keycloak import KeycloakOpenID
+from passlib.context import CryptContext
 
 from app.config import settings
+from app.models.secretKey import SecretKeyValue
 from app.models.user import UserTokenInfo
 
 keycloak_openid = KeycloakOpenID(
@@ -19,6 +21,15 @@ keycloak_openid = KeycloakOpenID(
 
 cookie_scheme = APIKeyCookie(name="access_token", auto_error=False)
 refresh_cookie_scheme = APIKeyCookie(name="refresh_token", auto_error=False)
+
+
+oauth2_scheme = OAuth2PasswordBearer(
+    tokenUrl="token",
+    scheme_name="Secret key Adim Authentication",
+    auto_error=False,
+)
+
+secret_key_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class TokenAccessChecker:
@@ -62,9 +73,47 @@ class TokenAccessChecker:
             return False
 
 
+class SecretKeyAccessChecker:
+    def __init__(self, auto_error: Optional[bool] = True):
+        self.auto_error = auto_error
+
+    async def __call__(self, secret_key: str = Depends(oauth2_scheme)):
+        try:
+            if not secret_key:
+                raise HTTPException(status_code=401, detail="Not authenticated")
+
+            allowed_secret_keys = [settings.SECRET_KEY]
+            client_assigned_secret_keys = await SecretKeyValue.prisma().find_many()
+
+            if client_assigned_secret_keys:
+                allowed_secret_keys += [
+                    key.secret_key for key in client_assigned_secret_keys
+                ]
+
+            for key in allowed_secret_keys:
+                if secret_key_context.verify(secret_key, key):
+                    return True
+
+            raise HTTPException(status_code=403, detail="Unauthorized access")
+        except HTTPException as e:
+            if self.auto_error:
+                raise e
+            return False
+
+
+has_admin_role = SecretKeyAccessChecker()
 valid_access_token = TokenAccessChecker()
 
+has_admin_role_without_error = SecretKeyAccessChecker(auto_error=False)
 valid_access_token_without_error = TokenAccessChecker(auto_error=False)
+
+
+async def has_customer_session(
+    token_data: Annotated[Union[dict, bool], Depends(valid_access_token_without_error)],
+    admin: Annotated[bool, Depends(has_admin_role_without_error)],
+):
+    if not token_data and not admin:
+        raise HTTPException(status_code=403, detail="Unauthorized access")
 
 
 async def get_current_user(
