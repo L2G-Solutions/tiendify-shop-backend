@@ -6,6 +6,10 @@ class Settings(BaseSettings):
     DATABASE_URL: str
     AZURE_STORAGE: str
     AZURE_PUBLIC_CONTAINER: str
+    KEYCLOAK_URL: str
+    KEYCLOAK_CLIENT_ID: str
+    KEYCLOAK_REALM: str
+    KEYCLOAK_CLIENT_SECRET: str
 
     class Config:
         env_file = ".env"
