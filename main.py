@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
 from app.database import db
+from app.routes.auth.private_routes import router as private_auth_router
+from app.routes.auth.public_routes import router as public_auth_router
 from app.routes.categories import router as category_router
 from app.routes.customers import router as customer_router
 from app.routes.orders import router as order_router
@@ -39,6 +41,9 @@ app.add_middleware(
 def handle_get_health():
     return {"status": "ok"}
 
+
+app.include_router(public_auth_router, prefix="/auth/public")
+app.include_router(private_auth_router, prefix="/auth/private")
 
 app.include_router(category_router, prefix="/categories")
 app.include_router(product_router, prefix="/products")
