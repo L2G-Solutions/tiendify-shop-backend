@@ -118,3 +118,14 @@ model shipping {
   orders             orders[]
   addresses          addresses @relation(fields: [address_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
+
+model secret_keys {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String    @db.VarChar
+  prefix     String    @db.VarChar
+  secret_key String    @db.VarChar
+  scopes     String    @db.VarChar
+  enabled    Boolean   @default(true)
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  updated_at DateTime? @default(now()) @db.Timestamp(6)
+}
