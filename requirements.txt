@@ -5,6 +5,7 @@ async-property==0.2.2
 azure-core==1.32.0
 azure-identity==1.19.0
 azure-storage-blob==12.23.1
+bcrypt==4.2.1
 certifi==2024.8.30
 cffi==1.17.1
 charset-normalizer==3.4.0
@@ -46,6 +47,7 @@ nodeenv==1.9.1
 orjson==3.10.7
 packaging==23.2
 parso==0.8.3
+passlib==1.7.4
 platformdirs==4.2.0
 portalocker==2.10.1
 prisma==0.15.0
@@ -58,7 +60,7 @@ pydantic-extra-types==2.9.0
 pydantic-settings==2.5.2
 pydantic_core==2.23.4
 Pygments==2.17.2
-PyJWT==2.9.0
+PyJWT==2.10.1
 python-dateutil==2.8.2
 python-dotenv==1.0.1
 python-keycloak==4.6.2
