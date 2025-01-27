@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.core.security import has_admin_role
@@ -50,3 +52,25 @@ async def create_secret_key(
     secret_key_row.secret_key = secret_key
 
     return secret_key_row
+
+
+@router.delete(
+    "/{secret_key_id}",
+    summary="Delete a secret key",
+)
+async def delete_secret_key(
+    secret_key_id: UUID,
+    client_db: Prisma = Depends(get_shops_db),
+):
+    secret_key_id = str(secret_key_id)
+    secret_key = await client_db.secret_keys.find_unique(where={"id": secret_key_id})
+
+    if not secret_key:
+        raise HTTPException(
+            status_code=404,
+            detail="Secret key not found",
+        )
+
+    await client_db.secret_keys.delete(where={"id": secret_key_id})
+
+    return secret_key
