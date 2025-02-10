@@ -1,7 +1,8 @@
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, Response, UploadFile
+from fastapi import APIRouter, Depends, Request, Response, UploadFile
 
+from app.config import settings
 from app.database import get_db as get_shops_db
 from app.models.products import ProductCreate, ProductUpdateVisibility
 from app.routes.products.utils import (
@@ -28,7 +29,7 @@ async def handle_get_products(
             "products_mediafiles": {"include": {"mediafiles": True}, "take": 1},
         },
         take=limit,
-        skip=offset,
+        skip=offset if offset > 0 else 0,
     )
     count = await shop_db.products.count()
 
@@ -133,21 +134,26 @@ async def handle_delete_product(
 
 @router.post("/{product_id}/mediafile")
 async def handle_create_product_mediafile(
-    product_id: int, mediafile: UploadFile, shop_db: ShopsClient = Depends(get_shops_db)
+    product_id: int,
+    request: Request,
+    file: UploadFile,
+    shop_db: ShopsClient = Depends(get_shops_db),
 ):
+    extension = file.filename.split(".")[-1]
+
     id_ = str(uuid4())
 
-    upload_file(mediafile.file, "products/" + id_)
+    upload_file(file.file, "products/" + id_ + "." + extension)
 
     new_mediafile = await shop_db.mediafiles.create(
         data={
-            "url": "products/" + id_,
-            "type": mediafile.content_type if mediafile.content_type else "image/jpeg",
+            "url": f"{settings.AZURE_STORAGE}/{settings.AZURE_PUBLIC_CONTAINER}/products/{id_}.{extension}",
+            "type": file.content_type,
         }
     )
 
     await shop_db.products_mediafiles.create(
-        data={"product_id": product_id, "mediafile_id": new_mediafile.id}
+        data={"product_id": product_id, "media_file_id": new_mediafile.id}
     )
 
     return new_mediafile
