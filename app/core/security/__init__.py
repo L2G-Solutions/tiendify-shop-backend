@@ -33,6 +33,8 @@ secret_key_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class TokenAccessChecker:
+    """Class to check the validity of the access token."""
+
     def __init__(self, auto_error: Optional[bool] = True):
         self.auto_error = auto_error
 
@@ -127,5 +129,5 @@ async def get_current_user(
             "lastName": token_data.get("family_name"),
         }
         return UserTokenInfo(**user_info)
-    except KeyError as e:
+    except KeyError:
         raise HTTPException(status_code=400, detail="Invalid token structure")

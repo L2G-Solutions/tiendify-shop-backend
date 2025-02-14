@@ -6,7 +6,7 @@ from prisma import Prisma as ShopsClient
 router = APIRouter(tags=["customers"])
 
 
-@router.get("/")
+@router.get("/", summary="Get all customers")
 async def handle_get_customers(
     shop_db: ShopsClient = Depends(get_shops_db),
     limit: int = 20,

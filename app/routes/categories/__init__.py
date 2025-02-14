@@ -7,14 +7,14 @@ from prisma import Prisma as ShopsClient
 router = APIRouter(tags=["categories"])
 
 
-@router.get("/categories")
+@router.get("/categories", summary="Get all categories")
 async def handle_get_categories(shop_db: ShopsClient = Depends(get_shops_db)):
     categories = await shop_db.categories.find_many()
 
     return categories
 
 
-@router.post("/categories")
+@router.post("/categories", summary="Create a new category")
 async def handle_post_categories(
     data: CategoryCreate, shop_db: ShopsClient = Depends(get_shops_db)
 ):
@@ -23,7 +23,7 @@ async def handle_post_categories(
     return new_category
 
 
-@router.delete("/categories/{category_slug}")
+@router.delete("/categories/{category_slug}", summary="Delete a category")
 async def handle_delete_category(
     category_slug: str, shop_db: ShopsClient = Depends(get_shops_db)
 ):

@@ -16,6 +16,11 @@ from app.routes.products import router as product_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Controls the lifespan of the application. Initializes and closes the database connection.
+
+    Args:
+        app (FastAPI): The FastAPI application instance.
+    """
     await db.connect()
     print("Connected to database")
     yield

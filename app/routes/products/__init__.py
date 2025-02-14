@@ -15,7 +15,7 @@ from prisma import Prisma as ShopsClient
 router = APIRouter(tags=["products"])
 
 
-@router.get("/")
+@router.get("/", summary="Get all products")
 async def handle_get_products(
     shop_db: ShopsClient = Depends(get_shops_db),
     limit: int = 20,
@@ -39,7 +39,7 @@ async def handle_get_products(
     }
 
 
-@router.get("/{product_id}")
+@router.get("/{product_id}", summary="Get a single product")
 async def handle_get_product(
     product_id: int, shop_db: ShopsClient = Depends(get_shops_db)
 ):
@@ -57,7 +57,7 @@ async def handle_get_product(
     return parse_single_product_response_data(product)
 
 
-@router.post("/")
+@router.post("/", summary="Create a new product")
 async def handle_create_product(
     data: ProductCreate, shop_db: ShopsClient = Depends(get_shops_db)
 ):
@@ -79,7 +79,7 @@ async def handle_create_product(
     return parse_single_product_response_data(new_product)
 
 
-@router.put("/{product_id}")
+@router.put("/{product_id}", summary="Update a product")
 async def handle_update_product(
     product_id: int, data: ProductCreate, shop_db: ShopsClient = Depends(get_shops_db)
 ):
@@ -120,7 +120,7 @@ async def handle_update_product(
     return parse_single_product_response_data(updated_product)
 
 
-@router.delete("/{product_id}")
+@router.delete("/{product_id}", summary="Delete a product")
 async def handle_delete_product(
     product_id: int, shop_db: ShopsClient = Depends(get_shops_db)
 ):
@@ -132,7 +132,7 @@ async def handle_delete_product(
     return Response(status_code=204)
 
 
-@router.post("/{product_id}/mediafile")
+@router.post("/{product_id}/mediafile", summary="Add a mediafile to a product")
 async def handle_create_product_mediafile(
     product_id: int,
     request: Request,
@@ -159,7 +159,7 @@ async def handle_create_product_mediafile(
     return new_mediafile
 
 
-@router.patch("/{product_id}/visibility")
+@router.patch("/{product_id}/visibility", summary="Change product visibility")
 async def handle_change_product_visibility(
     data: ProductUpdateVisibility,
     product_id: int,
